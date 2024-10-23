@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Princess Colin~</title>
+    <style>
+        @font-face {
+            font-family: 'Starborn';
+            src: url(Starborn.ttf) format('truetype');
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-image: url(bg1.jpg);
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        } 
+        h1 {
+            font-family: 'Starborn';
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #FFFAA0;
+            text-shadow: 
+                3px 3px 0 #dead7c,  
+                -1px -1px 0 #dead7c,
+                1px -1px 0 #dead7c,
+                -1px 1px 0 #dead7c;
+        }
+        .button-container {
+            display: flex;
+            gap: 1px;
+        }
+        .button {
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% {
+                transform: translatey(0);
+            }
+            50% {
+                transform: translatey(-10px);
+            }
+        }
+        .hidden {
+            display: none;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        input {
+            padding: 10px;
+            width: 200px;
+        }
+        button {
+            padding: 10px;
+            cursor: pointer;
+        }
+        img {
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+        img.fade-out {
+            opacity: 0;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome!</h1>
+    <div class="button-container">
+        <img src="login.png" alt="login" class="button" id="loginButton" onclick="handleClick('login')" style="width: 700px;">
+        <img src="signup.png" alt="signup" class="button" id="signupButton" onclick="handleClick('signup')" style="width: 700px;">  
+    </div>
+
+    <div id="form-container" class="hidden">
+        <form id="login-form" class="hidden" onsubmit="return handleLogin(event)">
+            <h2>Login</h2>
+            <input type="text" placeholder="Username" required>
+            <input type="password" placeholder="Password" required> 
+            <button type="submit">Login</button>
+            <div id="loginError" class="error-message hidden"></div>
+        </form>
+        <form id="signup-form" class="hidden" onsubmit="return handleSignup(event)">
+            <h2>Sign Up</h2>
+            <input type="text" id="signupUsername" placeholder="Username" required>
+            <input type="email" placeholder="E-mail" required>
+            <input type="password" placeholder="Password" required> 
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+
+    <script>
+        let hasAccount = false;
+
+        window.onpopstate = function(event) {
+            if (event.state) {
+                const formType = event.state.formType;
+                showForm(formType);
+            } else {
+                resetView();
+            }
+        };
+
+        function handleClick(formType) {
+            const loginButton = document.getElementById('loginButton');
+            const signupButton = document.getElementById('signupButton');
+
+            loginButton.classList.add('fade-out');
+            signupButton.classList.add('fade-out');
+
+            setTimeout(() => {
+                showForm(formType);
+                history.pushState({ formType: formType }, '', '');
+            }, 500);
+        }
+
+        function showForm(formType) {
+            const formContainer = document.getElementById('form-container');
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const loginError = document.getElementById('loginError');
+
+            document.querySelector('.button-container').style.display = 'none';
+            formContainer.classList.remove('hidden');
+
+            if (formType === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                loginError.classList.add('hidden');
+            } else {
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        function resetView() {
+            document.getElementById('form-container').classList.add('hidden');
+            document.querySelector('.button-container').style.display = 'flex';
+            document.getElementById('loginButton').classList.remove('fade-out');
+            document.getElementById('signupButton').classList.remove('fade-out');
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            hasAccount = true;
+            alert("Sign up successful! You can now log in.");
+            resetView();
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const loginError = document.getElementById('loginError');
+
+            if (!hasAccount) {
+                loginError.textContent = "Account does not exist. Please sign up first!";
+                loginError.classList.remove('hidden');
+            } else {
+                alert("Login successful!");
+            }
+        }
+    </script>
+</body>
+</html>
